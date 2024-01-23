@@ -2,7 +2,6 @@ import { Comment } from "../types.d"
 
 const API_KEY = import.meta.env.VITE_API_KEY
 const API_URL = 'https://api.jsonbin.io/v3/b/65afc9f51f5677401f23d05a'
-const API_URL2 = 'https://api.jsonbin.io/v3/b/65afc9f51f5677401f23d05a2'
 
 export const getComments = async () => {
     
@@ -27,7 +26,7 @@ export const createComment = async( newComment: Comment) => {
         const comments = await getComments()
         const newCommentsArray = [...comments!, newComment]
         
-        const resp = await fetch(API_URL2, {
+        const resp = await fetch(API_URL, {
             method: 'PUT',
             headers: {
                 "X-Master-Key": API_KEY,
