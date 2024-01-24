@@ -11,7 +11,7 @@ function App() {
       <h1 className='text-center font-bold uppercase my-2'>Apps of Comments</h1>
       <NewComment />
       <ListsComments />
-      <Toaster richColors />
+      <Toaster richColors position='top-right' />
     </>
   )
 }

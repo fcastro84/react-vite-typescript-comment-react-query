@@ -60,3 +60,35 @@ export const deleteComment = async( id: CommentId) => {
         throw new Error("Can not have delete comment");  
     }
 }
+
+export const updateComment = async( updateComment: Comment ) => {
+    const { id, title, description } = updateComment
+    const comments = await getComments()
+    const newCommentsArray = [...comments].map( comment => {
+
+        if( comment.id === id){
+            return {
+                ...comment,
+                title,
+                description
+            }
+        }
+
+        return comment
+    })
+    
+    const resp = await fetch(API_URL, {
+        method: 'PUT',
+        headers: {
+            "X-Master-Key": API_KEY,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newCommentsArray)
+    })
+
+    if(!resp.ok){
+        throw new Error("Can not have update comment");  
+    }
+
+    return updateComment
+}

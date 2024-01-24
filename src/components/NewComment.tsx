@@ -12,7 +12,7 @@ const NewComment = () => {
     const [form, setForm] = useState< 'error' | null >(null)
     const queryClient = useQueryClient()
 
-    const { mutate } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: createComment,
         onMutate: async (newComment) => {
             await queryClient.cancelQueries({queryKey: ['comment']})
@@ -46,6 +46,8 @@ const NewComment = () => {
 
     const handleSumit = ( event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        if( isPending ) return
+
         setForm(null)
         const form = event.target as HTMLFormElement
         const formData = new FormData( event.currentTarget )
@@ -81,7 +83,7 @@ const NewComment = () => {
             {
                 form === 'error' && <Badge color='red' className="mr-5 px-4">Errors on the form</Badge>
             }
-           <Button color="blue" className="flex gap-2 w-20" icon={RiAddFill}> 
+           <Button color="blue" className="flex gap-2 w-20" icon={RiAddFill} loading={isPending}> 
             Add
             </Button> 
         </div>
