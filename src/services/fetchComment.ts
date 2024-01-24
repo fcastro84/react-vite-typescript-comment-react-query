@@ -1,4 +1,4 @@
-import { Comment } from "../types.d"
+import { Comment, CommentId } from "../types.d"
 
 const API_KEY = import.meta.env.VITE_API_KEY
 const API_URL = 'https://api.jsonbin.io/v3/b/65afc9f51f5677401f23d05a'
@@ -24,7 +24,7 @@ export const getComments = async () => {
 export const createComment = async( newComment: Comment) => {
     
         const comments = await getComments()
-        const newCommentsArray = [...comments!, newComment]
+        const newCommentsArray = [...comments, newComment]
         
         const resp = await fetch(API_URL, {
             method: 'PUT',
@@ -36,8 +36,27 @@ export const createComment = async( newComment: Comment) => {
         })
 
         if(!resp.ok){
-            throw new Error("Not have create comment");  
+            throw new Error("Can not have create comment");  
         }
 
         return newComment
+}
+
+export const deleteComment = async( id: CommentId) => {
+    
+    const comments = await getComments()
+    const commentsUpdate = comments.filter( comment => comment.id !== id)
+    
+    const resp = await fetch(API_URL, {
+        method: 'PUT',
+        headers: {
+            "X-Master-Key": API_KEY,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(commentsUpdate)
+    })
+
+    if(!resp.ok){
+        throw new Error("Can not have delete comment");  
+    }
 }
