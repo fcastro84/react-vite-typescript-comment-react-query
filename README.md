@@ -5,6 +5,8 @@
 ```
 $ yarn add @tanstack/react-query -E
 
+$ yarn add react-spinners -E
+
 $ yarn add @tremor/react
 
 $ yarn add -D tailwindcss postcss autoprefixer 
@@ -48,3 +50,5 @@ export default {
 - [tailwindcss](https://tailwindcss.com/docs/installation)
 - [react-query](https://tanstack.com/query/latest/docs/react/installation)
 - [sonner](https://sonner.emilkowal.ski/)
+- [API: jsonbin.io](https://jsonbin.io/api-reference)
+- [react-spinners](https://www.npmjs.com/package/react-spinners)

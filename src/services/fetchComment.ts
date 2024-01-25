@@ -13,7 +13,7 @@ export const getComments = async () => {
         })
 
         if(! resp.ok) {
-            throw new Error("No fetch to the API"); 
+            throw new Error("Cannot access the API"); 
         }
         const { record: comments} = await resp.json() as { record: Comment[]}
         return comments
@@ -36,7 +36,7 @@ export const createComment = async( newComment: Comment) => {
         })
 
         if(!resp.ok){
-            throw new Error("Can not have create comment");  
+            throw new Error("Could not create new comment");  
         }
 
         return newComment
@@ -57,7 +57,7 @@ export const deleteComment = async( id: CommentId) => {
     })
 
     if(!resp.ok){
-        throw new Error("Can not have delete comment");  
+        throw new Error("Could not delete the comment");  
     }
 }
 
@@ -87,7 +87,7 @@ export const updateComment = async( updateComment: Comment ) => {
     })
 
     if(!resp.ok){
-        throw new Error("Can not have update comment");  
+        throw new Error("Could not update the comment");  
     }
 
     return updateComment

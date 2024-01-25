@@ -2,9 +2,8 @@ import { FormEvent, useState } from "react"
 import { Comment } from "../types.d"
 import { Badge, Button, Dialog, DialogPanel, Divider, Flex, TextInput, Textarea, Title } from "@tremor/react"
 import { toast } from "sonner"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { updateComment } from "../services/fetchComment"
-import { RiEditLine } from "@remixicon/react"
+import { RiCloseFill, RiEditFill } from "@remixicon/react"
+import useComment from "../hooks/useComment"
 
 
 export interface EditCommentProp {
@@ -16,48 +15,12 @@ export interface EditCommentProp {
 const EditComment = ({isOpen, changeOpen, comment}: EditCommentProp) => {
 
     const [result, setResult] = useState<'ko' | null>(null)
-    const queryClient = useQueryClient()
-
-    const { mutate, isPending } = useMutation({
-        mutationFn: updateComment,
-        onMutate: async ( updateComment ) => {
-            await queryClient.cancelQueries({queryKey: ['comment']})
-    
-            const previousComments = queryClient.getQueryData(['comment'])
-            const { id, title, description } = updateComment
-    
-            queryClient.setQueryData(['comment'], (old: Comment[]) => [...old].map( comment => {
-                if( comment.id === id ){
-                    return {
-                        ...comment,
-                        title,
-                        description
-                    }
-                }
-                return comment
-            }))
-    
-            return { previousComments }
-        },
-        onSuccess: () => {
-    
-            //Refresh de la query
-            //queryClient.invalidateQueries({queryKey: ['comment']})
-        },
-        onError: (error, updateComment, context) => {
-            toast.error('An error occurred while updating the comment')
-            queryClient.setQueryData(['comment'], context?.previousComments)
-            
-        },
-        onSettled: () => {
-           queryClient.invalidateQueries({queryKey: ['comment']})
-        }
-    })
+    const { mutateUpdate, isPendingUpdate} = useComment()
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if( isPending ) return
+        if( isPendingUpdate ) return
 
         setResult(null)
 
@@ -75,7 +38,7 @@ const EditComment = ({isOpen, changeOpen, comment}: EditCommentProp) => {
             description
         }
 
-        mutate( updateComment )
+        mutateUpdate( updateComment )
 
         toast.success(`The comment ${comment.id} has been successfully updated`)
         changeOpen(false)
@@ -94,10 +57,10 @@ const EditComment = ({isOpen, changeOpen, comment}: EditCommentProp) => {
                     {
                         result === 'ko' && <Badge color='red' className="mr-5 px-4">Errors on the form</Badge>
                     }
-                    <Button color="blue" className="flex gap-2 w-20" icon={RiEditLine}> 
+                    <Button color="blue" className="flex gap-2 w-20" icon={RiEditFill}> 
                         Add
                     </Button>
-                    <Button type="button" className="bg-red-600" color="red"  onClick={() => changeOpen(false)}>
+                    <Button type="button" className="bg-red-600" color="red"  onClick={() => changeOpen(false)} icon={RiCloseFill}>
                         Cancel
                     </Button>
                 </Flex>

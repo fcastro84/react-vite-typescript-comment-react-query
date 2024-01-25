@@ -1,51 +1,19 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteComment, getComments } from "../services/fetchComment"
 import { Button, Card, Divider, Flex, Text } from "@tremor/react"
 import { CommentId, Comment } from "../types.d"
 import { toast } from "sonner"
 import EditComment from "./EditComment"
 import { useState } from "react"
+import { FadeLoader } from "react-spinners"
+import useComment from "../hooks/useComment"
 
 const ListsComments = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [comment, setComment] = useState({} as Comment);
-  const queryClient = useQueryClient()
+  const { data, isLoading, isError, error, mutateDelete} = useComment()
   
-  const { data, isLoading, isError, error} = useQuery({
-    queryKey: ['comment'],
-    queryFn: getComments,
-    refetchOnWindowFocus: false
-
-  })
-
-  const { mutate } = useMutation({
-    mutationFn: deleteComment,
-    onMutate: async (id) => {
-        await queryClient.cancelQueries({queryKey: ['comment']})
-
-        const previousComments = queryClient.getQueryData(['comment'])
-
-        queryClient.setQueryData(['comment'], (old: Comment[]) => [...old].filter( comment => comment.id !== id))
-
-        return { previousComments }
-    },
-    onSuccess: () => {
-
-        //Refresh de la query
-        //queryClient.invalidateQueries({queryKey: ['comment']})
-    },
-    onError: (error, newComment, context) => {
-        toast.error('An error occurred while deleting the comment')
-        queryClient.setQueryData(['comment'], context?.previousComments)
-        
-    },
-    onSettled: () => {
-       queryClient.invalidateQueries({queryKey: ['comment']})
-    }
-})
 
   const handleDeleteComment = ( id: CommentId) => {
-    mutate(id)
+    mutateDelete(id)
     toast.success(`The comment with id: ${id} is delete success`)
   }
 
@@ -62,7 +30,7 @@ const ListsComments = () => {
           <div className="grid grid-cols-3 mx-auto gap-2 w-[80%]">
                 { data?.map( comment => {
                 return (
-                  <Card key={comment.id} className="border-blue-400 border-2 bg-gray-100">
+                  <Card key={comment.id} className={`${comment.preview === true ? 'bg-gray-300' : 'bg-gray-100'}  border-blue-400 border-2 `}>
                     <Text className="text-center font-bold"> { comment.title } </Text>
                     <Divider></Divider>
                     <Text className="text-justify h-16"> { comment.description } </Text>
@@ -91,8 +59,8 @@ const ListsComments = () => {
         </>  
       )
       }
-      { isLoading && <span className=" text-center text-red-700 font-extrabold">Loading ...</span>}
-      { isError && <span className=" text-center text-red-700 font-extrabold px-36">{error.message}</span>}
+      { isLoading && <FadeLoader color="blue" loading={isLoading} cssOverride={{margin: '2rem auto', zIndex: '9999'}} aria-label="Loading Spinner" height={80} width={5} />}
+      { isError && <span className=" text-center text-red-700 font-extrabold px-36">{error?.message}</span>}
       
     </div>
   )

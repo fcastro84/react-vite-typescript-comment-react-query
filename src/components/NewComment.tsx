@@ -3,46 +3,13 @@ import { FormEvent, useState } from "react"
 import { Comment } from "../types.d"
 import { toast } from "sonner"
 import { RiAddFill } from "@remixicon/react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createComment } from "../services/fetchComment"
+import useComment from "../hooks/useComment"
 
 
 const NewComment = () => {
 
     const [form, setForm] = useState< 'error' | null >(null)
-    const queryClient = useQueryClient()
-
-    const { mutate, isPending } = useMutation({
-        mutationFn: createComment,
-        onMutate: async (newComment) => {
-            await queryClient.cancelQueries({queryKey: ['comment']})
-
-            const previousComments = queryClient.getQueryData(['comment'])
-
-            queryClient.setQueryData(['comment'], (old: Comment[]) => [...old, newComment])
-
-            return { previousComments }
-        },
-        onSuccess: (/*data*/) => {
-
-            //Update of Query data manually
-            // const comment = queryClient.getQueriesData({ queryKey: ['comment']})[0][1] as Comment[]
-            // const newState = comment ? [...comment, data] : [data]
-            // queryClient.setQueryData(['comment'], () => newState)
-
-            //Refresh de la query
-            //queryClient.invalidateQueries({queryKey: ['comment']})
-        },
-        onError: (error, newComment, context) => {
-            
-            toast.error('An error occurred while creating the new comment')
-            queryClient.setQueryData(['comment'], context?.previousComments)
-            
-        },
-        onSettled: () => {
-           queryClient.invalidateQueries({queryKey: ['comment']})
-        }
-    })
+    const { mutateCreate, isPending} = useComment()
 
     const handleSumit = ( event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -66,10 +33,10 @@ const NewComment = () => {
             description
         }
 
-        mutate(newComment)
+        mutateCreate(newComment)
         form.reset()
 
-        toast.success(`The comment with id: ${id} is create success`)
+        toast.success(`The comment with id: ${id} has create success`)
     }
 
   return (
