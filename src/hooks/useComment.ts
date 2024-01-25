@@ -43,6 +43,7 @@ const useComment = () => {
         //queryClient.invalidateQueries({queryKey: ['comment']})
     },
     onError: (error, newComment, context) => {
+        console.log(error,newComment)
         
         toast.error('An error occurred while creating the new comment')
         queryClient.setQueryData(['comment'], context?.previousComments)
@@ -81,6 +82,7 @@ const { mutate: mutateUpdate, isPending: isPendingUpdate } = useMutation({
         //queryClient.invalidateQueries({queryKey: ['comment']})
     },
     onError: (error, updateComment, context) => {
+        console.log(error,updateComment)
         toast.error('An error occurred while updating the comment')
         queryClient.setQueryData(['comment'], context?.previousComments)
         
@@ -107,6 +109,7 @@ const { mutate: mutateUpdate, isPending: isPendingUpdate } = useMutation({
         //queryClient.invalidateQueries({queryKey: ['comment']})
     },
     onError: (error, newComment, context) => {
+        console.log(error,newComment)
         toast.error('An error occurred while deleting the comment')
         queryClient.setQueryData(['comment'], context?.previousComments)
         
